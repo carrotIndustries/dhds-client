@@ -1,0 +1,65 @@
+#!/usr/bin/python3
+import argparse
+import getpass
+import bee.util
+import subprocess
+import itertools
+
+optionmap = {
+	"n"			:("Kopien",None),
+	"color"		:("Farbe", {True: "Ja", False: "Nein"}),
+	"a3"		:("PageSize", {True: "A3", False: "A4"}),
+	"layout"	:("SIDES", {"s": "ONE", "tl": "TWO-LONG", "ts": "TWO-SHORT"}),
+	"format"	:("FORMAT", {"p": "HOCH", "l": "QUER"}),
+	"scale"		:("SCALE", {True: "Ja", False: "Nein"}),
+	"pps"		:("SproB", None),
+	"brochure"	:("Booklet", {True: "Ja", False: "Nein"}),
+	"punch"		:("Punch", {"n":"", "l":"PL", "r": "PR", "t": "PU", "b": "PB"}),
+	"staple"	:("Staple", {"n":"", "tr": "1PRU", "tl": "1PLU", "bl": "1PLB", "br": "1PRB", "2r": "2PR", "2l": "2PL"}),
+}
+
+addnopts = {
+	"Finishing": "",
+	"ROBEN": "Std",
+	"RUNTEN": "Std",
+	"RRECHTS": "Std",
+	"RLINKS": "Std",
+	"CPI": "Std",
+	"CLI": "Std"
+}
+
+parser = argparse.ArgumentParser(description='DH-Drucksystem-Client')
+parser.add_argument("-u", "--user", dest="user", required=True)
+parser.add_argument("-n", "--n-copies", dest="n", default=1)
+parser.add_argument("-c", "--color", dest="color", action="store_true")
+parser.add_argument("-3", "--a3", dest="a3", action="store_true")
+parser.add_argument("-l", "--layout", dest="layout", default="s", choices=["s", "tl", "ts"])
+parser.add_argument("-f", "--format", dest="format", default="p", choices=["p", "l"])
+parser.add_argument("-S", "--scale", dest="scale", action="store_true")
+parser.add_argument("-P", "--pages-per-side", dest="pps", default=1, choices=[1,2,4])
+parser.add_argument("-b", "--brochure", dest="brochure", action="store_true")
+parser.add_argument("-p", "--punch", dest="punch", default="n", choices=["n", "l", "r", "t", "b"])
+parser.add_argument("-s", "--staple", dest="staple", default="n", choices=["n", "tr", "tl", "bl", "br", "2r", "2l"])
+parser.add_argument("file", type=str)
+args = parser.parse_args().__dict__
+password = getpass.getpass("password for "+args["user"]+":")
+#password="123"
+
+
+params = dict(map(lambda k,v: (v[0], args[k] if v[1] is None else v[1][args[k]]), *zip(*optionmap.items())))
+params.update(addnopts)
+params["login"] = args["user"]
+params["password"] = password
+params["FILE2"] = "@"+args["file"]
+
+curl_options = tuple(map(lambda k,v: ('-F', str(k)+'='+str(v)), *zip(*params.items())))
+curl_options = itertools.chain(*curl_options)
+curl_url = 'https://it.dhbw-stuttgart.de/cgi-bin/baps/upload.cgi'
+curl_cmd = ["curl"] + list(curl_options) + [curl_url]
+
+#os.system(curl_cmd)
+result = subprocess.check_output(curl_cmd).decode()
+if "Erfolg" in result :
+	print("Erfolg")
+else :
+	print(result)

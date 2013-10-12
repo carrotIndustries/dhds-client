@@ -1,0 +1,13 @@
+Kopien		1
+Farbe		Nein|Ja
+PageSize	A4|A3
+SIDES		ONE|TWO-LONG|TO-SHORT
+FORMAT		HOCH|QUER
+SCALE		JA|NEIN
+SproB		1|2|4
+Booklet		Ja|Nein
+Punch		""|PL|PR|PU|PB #keine links rechts oben unten
+Staple		""|1PRU|1PLU|1PLB|1PRB|2PR|2PL #keine, rechts oben, links oben, links unten, rechts unten, 2 rechts, 2 links
+Finishing	""|RotCol #1 1... 2 2... ,1 2... 1 2... 
+ROBEN|RUNTEN|RLINKS|RRECHTS Std
+CPI|LPI Std
