@@ -43,8 +43,6 @@ parser.add_argument("-s", "--staple", dest="staple", default="n", choices=["n", 
 parser.add_argument("file", type=str)
 args = parser.parse_args().__dict__
 password = getpass.getpass("password for "+args["user"]+":")
-#password="123"
-
 
 params = dict(map(lambda k,v: (v[0], args[k] if v[1] is None else v[1][args[k]]), *zip(*optionmap.items())))
 params.update(addnopts)
